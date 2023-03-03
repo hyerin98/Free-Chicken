@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     float hAxis;
     float vAxis;
     bool rDown;
+    bool isJump;
 
     Rigidbody rigid;
 
@@ -32,6 +33,7 @@ public class Player : MonoBehaviour
         GetInput();
         Move();
         Turn();
+        Jump();
     }
 
     void GetInput()
@@ -39,13 +41,14 @@ public class Player : MonoBehaviour
         hAxis = Input.GetAxisRaw("Horizontal");
         vAxis = Input.GetAxisRaw("Vertical");
         rDown = Input.GetButton("Run");
+        isJump = Input.GetButtonDown("Jump");
     }
 
     void Move()
     {
         moveVec = new Vector3(hAxis, 0, vAxis).normalized;
 
-        transform.position += moveVec * rspeed * (rDown ? 3f : 1f) * Time.deltaTime;
+        transform.position += moveVec * rspeed * (rDown ? 1.5f : 1f) * Time.deltaTime;
 
         
         anim.SetBool("Walk", moveVec != Vector3.zero);
@@ -56,5 +59,18 @@ public class Player : MonoBehaviour
     {
         transform.LookAt(transform.position + moveVec);
     }
-
+    void Jump()
+    {
+        if (isJump)
+        {
+            rigid.AddForce(Vector3.up * 3,ForceMode.Impulse);
+        }
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Floor")
+        {
+            isJump = false;
+        }
+    }
 }
