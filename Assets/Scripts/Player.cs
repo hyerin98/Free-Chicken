@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using UnityEngine.UI;
 public class Player : MonoBehaviour
-{ 
+{
+    public Slider playerHealthbar;
+    public Image fillImage;
+    
     public float rspeed;
     float hAxis;
     float vAxis;
@@ -44,6 +47,7 @@ public class Player : MonoBehaviour
         Move();
         Turn();
         Jump();
+        UI();
     }
 
     void LateUpdate()
@@ -54,7 +58,10 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(playerRoatate), Time.deltaTime * smoothness);
         }
     }
-
+    void UI()
+    {
+        playerHealthbar.value -= 0.005f;
+    }
     void GetInput()
     {
         hAxis = Input.GetAxisRaw("Horizontal");
@@ -86,7 +93,7 @@ public class Player : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Floor")
+        if (collision.gameObject.tag == "Floor")
         {
             isJump = false;
         }
