@@ -6,7 +6,8 @@ public class MoveObstacle : MonoBehaviour
 {
     public enum MoveObstacleType { A,B,C,D,E,F};
     public MoveObstacleType Type;
-    //PlayerController player;
+    public PlayerController player;
+    
     //UD_Floor
     float initPositionY;
     float initPositionX;
@@ -15,7 +16,11 @@ public class MoveObstacle : MonoBehaviour
     //UD_Floor & LR_Floor
     public bool turnSwitch;
     public float moveSpeed;
-
+   
+    //MovePlatform
+    public bool isMove; 
+    public bool isPlayerFollow;
+    
     //RT_Floor
     public float rotateSpeed;
 
@@ -27,18 +32,26 @@ public class MoveObstacle : MonoBehaviour
     public float initRotationZ;
     public float swingPoint;
     float z;
+    void Start()
+    {
+        player = GameObject.Find("Character").GetComponent<PlayerController>();
+        isPlayerFollow = false;
+    }
     void Awake()
     {
         if (Type == MoveObstacleType.A) // Up & Down
         {
             initPositionY = transform.position.y;
             turningPoint = initPositionY - distance;
+            
         }
         if(Type == MoveObstacleType.B) // Right & Left
         {
             initPositionX = transform.position.x;
             turningPoint = initPositionX - distance;
+            
         }
+
         /*if (Type == MoveObstacleType.F)
         {
             // -180 ~ 0
@@ -68,10 +81,18 @@ public class MoveObstacle : MonoBehaviour
         if (turnSwitch)
         {
             transform.position = transform.position + new Vector3(0, 1, 0) * moveSpeed * Time.deltaTime;
+            if (isPlayerFollow)
+            {
+                player.gameObject.transform.position = player.gameObject.transform.position + new Vector3(0, 1, 0) * moveSpeed * Time.deltaTime;
+            }
         }
         else
         {
             transform.position = transform.position + new Vector3(0, -1, 0) * moveSpeed * Time.deltaTime;
+            if (isPlayerFollow)
+            {
+                player.gameObject.transform.position = player.gameObject.transform.position + new Vector3(0, -1, 0) * moveSpeed * Time.deltaTime;
+            }
         }
     }
     void rotate()
@@ -95,10 +116,18 @@ public class MoveObstacle : MonoBehaviour
         if (turnSwitch)
         {
             transform.position = transform.position + new Vector3(1, 0, 0) * moveSpeed * Time.deltaTime;
+            if (isPlayerFollow)
+            {
+                player.gameObject.transform.position = player.gameObject.transform.position + new Vector3(1, 0, 0) * moveSpeed * Time.deltaTime;
+            }
         }
         else
         {
             transform.position = transform.position + new Vector3(-1, 0, 0) * moveSpeed * Time.deltaTime;
+            if (isPlayerFollow)
+            {
+                player.gameObject.transform.position = player.gameObject.transform.position + new Vector3(-1, 0, 0) * moveSpeed * Time.deltaTime;
+            }
         }
 
     }
@@ -110,7 +139,8 @@ public class MoveObstacle : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position, other.transform.position, dropSpeed);
         }
     }
-    void OnCollisionEnter(Collision collision)
+    
+    void OnCollisionStay(Collision collision) // 충돌시작시에
     {
         if(collision.gameObject.tag == "Player" && isBigJump)
         {
@@ -118,7 +148,11 @@ public class MoveObstacle : MonoBehaviour
            
             isBigJump = false;
         }
+        else if (collision.gameObject.tag == "Player" && isMove) // 충돌 중일때 
+        {
+            isPlayerFollow = true;
 
+        }
     }
     void Swing()
     {
@@ -127,13 +161,17 @@ public class MoveObstacle : MonoBehaviour
     }
     void Update()
     {
+       
         switch (Type)
         {
             case MoveObstacleType.A:
                 upDown();
+                isMove = true;
                 break;
-            case MoveObstacleType.B:
+            case MoveObstacleType.B:      
                 leftRight();
+                isMove = true;
+
                 break;
             case MoveObstacleType.C:
                 rotate();

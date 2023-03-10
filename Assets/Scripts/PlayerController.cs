@@ -15,8 +15,8 @@ public class PlayerController : MonoBehaviour
     public float runSpeed = 8f;
     public float finalSpeed;
 
-    float hAxis;
-    float vAxis;
+    public float hAxis;
+    public float vAxis;
 
     bool run;
     bool isJump;
@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     Vector3 moveDir;
 
     Animator anim;
+  
+    MoveObstacle obstacle;
 
     void Awake()
     {
@@ -35,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-       
+        obstacle = GameObject.FindGameObjectWithTag("Obstacle").GetComponent<MoveObstacle>();
     }
 
     void Update()
@@ -44,12 +46,14 @@ public class PlayerController : MonoBehaviour
         Move();
         GetInput();
         Jump();
+       
     }
 
     void GetInput()
     {
         hAxis = Input.GetAxisRaw("Horizontal");
         vAxis = Input.GetAxisRaw("Vertical");
+       
     }
 
     void Move()
@@ -61,14 +65,16 @@ public class PlayerController : MonoBehaviour
 
         if (isMove)
         {
+            obstacle.isPlayerFollow = false; // MovePlatform
             Vector3 lookForward = new Vector3(cameraArm.forward.x, 0f, cameraArm.forward.z).normalized;
             Vector3 lookRight = new Vector3(cameraArm.right.x, 0f, cameraArm.right.z).normalized;
             moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
 
             characterBody.forward = moveDir;
             transform.position += moveDir * finalSpeed * Time.deltaTime;
+           
         }
-
+        
         if (Input.GetKey(KeyCode.LeftShift))
         {
             run = true;
@@ -80,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
         float percent = ((run) ? 1 : 0.5f) * moveInput.magnitude;
         anim.SetFloat("Blend", percent, 0.1f, Time.deltaTime);
-
+        
         //Debug.DrawRay(cameraArm.position,new Vector3(cameraArm.forward.x,0f,cameraArm.forward.z).normalized,Color.red);
     }
 
@@ -99,6 +105,7 @@ public class PlayerController : MonoBehaviour
         {
             isJump = false;
         }
+       
     }
 
     private void LookAround() // Ä«¸Þ¶ó
