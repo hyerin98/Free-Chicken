@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MoveObstacle : MonoBehaviour
 {
-    public enum MoveObstacleType { A,B,C,D,E,F};
+    public enum MoveObstacleType { A, B, C, D, E, F };
     public MoveObstacleType Type;
     public PlayerController player;
-    
+
     //UD_Floor
     float initPositionY;
     float initPositionX;
@@ -16,11 +16,11 @@ public class MoveObstacle : MonoBehaviour
     //UD_Floor & LR_Floor
     public bool turnSwitch;
     public float moveSpeed;
-   
+
     //MovePlatform
-    public bool isMove; 
+    public bool isMove;
     public bool isPlayerFollow;
-    
+
     //RT_Floor
     public float rotateSpeed;
 
@@ -29,9 +29,11 @@ public class MoveObstacle : MonoBehaviour
     //Drop
     public float dropSpeed;
     //Swing
-    public float initRotationZ;
-    public float swingPoint;
-    float z;
+   
+    public float angle = 0;
+    private float lerpTime = 0;
+    private float speed = 2f;
+
     void Start()
     {
         player = GameObject.Find("Character").GetComponent<PlayerController>();
@@ -43,28 +45,22 @@ public class MoveObstacle : MonoBehaviour
         {
             initPositionY = transform.position.y;
             turningPoint = initPositionY - distance;
-            
+
         }
-        if(Type == MoveObstacleType.B) // Right & Left
+        if (Type == MoveObstacleType.B) // Right & Left
         {
             initPositionX = transform.position.x;
             turningPoint = initPositionX - distance;
-            
+
         }
 
-        /*if (Type == MoveObstacleType.F)
-        {
-            // -180 ~ 0
-            initRotationZ = transform.rotation.z; // 현재 z값 == -90
-            swingPoint = initRotationZ - distance; // 스윙 포인트는 현재 z값에서 distance 더한 값
-        }*/
         // Case C == Rotate
         // Case D == Big Jump
 
         // Case E == Delay & Drop
         // Case F == Swing
-    }
 
+    }
     void upDown()
     {
         float currentPositionY = transform.position.y;
@@ -140,7 +136,7 @@ public class MoveObstacle : MonoBehaviour
         }
     }
     
-    void OnCollisionStay(Collision collision) // 충돌시작시에
+    void OnCollisionStay(Collision collision) 
     {
         if(collision.gameObject.tag == "Player" && isBigJump)
         {
@@ -148,7 +144,7 @@ public class MoveObstacle : MonoBehaviour
            
             isBigJump = false;
         }
-        else if (collision.gameObject.tag == "Player" && isMove) // 충돌 중일때 
+        else if (collision.gameObject.tag == "Player" && isMove) 
         {
             isPlayerFollow = true;
 
@@ -156,8 +152,20 @@ public class MoveObstacle : MonoBehaviour
     }
     void Swing()
     {
+        lerpTime += Time.deltaTime * speed;
+        transform.rotation = CalculateMovementOfPendulum();
 
 
+    }
+    Quaternion CalculateMovementOfPendulum()
+    {
+        return Quaternion.Lerp(Quaternion.Euler(Vector3.forward * angle),
+            Quaternion.Euler(Vector3.back * angle), GetLerpTParam());
+    }
+
+    float GetLerpTParam()
+    {
+        return (Mathf.Sin(lerpTime) + 1) * .5f;
     }
     void Update()
     {
@@ -180,6 +188,7 @@ public class MoveObstacle : MonoBehaviour
                 isBigJump = true;
                 break;
             case MoveObstacleType.F:
+                
                 Swing();
                 break;
         }
