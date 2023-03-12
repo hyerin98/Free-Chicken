@@ -28,6 +28,7 @@ public class MoveObstacle : MonoBehaviour
     public bool isBigJump;
     //Drop
     public float dropSpeed;
+    public bool isDropObj;
     //Swing
    
     public float angle = 0;
@@ -129,13 +130,20 @@ public class MoveObstacle : MonoBehaviour
     }
     void OnTriggerEnter(Collider other) // Case E == Delay & Drop
     {
-        if(other.gameObject.tag == "Player" )
+        if(other.gameObject.tag == "Player" && isDropObj)
         {
             
             transform.position = Vector3.Lerp(transform.position, other.transform.position, dropSpeed);
         }
+     
     }
-    
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player" && isMove)
+        {
+            player.healthbar.value -= 10f;
+        }
+    }
     void OnCollisionStay(Collision collision) 
     {
         if(collision.gameObject.tag == "Player" && isBigJump)
@@ -187,8 +195,10 @@ public class MoveObstacle : MonoBehaviour
             case MoveObstacleType.D:
                 isBigJump = true;
                 break;
+            case MoveObstacleType.E:
+                isDropObj = true;
+                break;
             case MoveObstacleType.F:
-                
                 Swing();
                 break;
         }

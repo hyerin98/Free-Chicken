@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 //using UnityEngine.Windows;
 
 public class PlayerController : MonoBehaviour
@@ -28,6 +29,9 @@ public class PlayerController : MonoBehaviour
   
     MoveObstacle obstacle;
 
+    public float playerHealth;
+    public Slider healthbar;
+
     void Awake()
     {
         anim = characterBody.GetComponent<Animator>();
@@ -38,6 +42,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         obstacle = GameObject.FindGameObjectWithTag("Obstacle").GetComponent<MoveObstacle>();
+        playerHealth = 100f;
     }
 
     void Update()
@@ -46,9 +51,12 @@ public class PlayerController : MonoBehaviour
         Move();
         GetInput();
         Jump();
-       
+        UI();
     }
-
+    void UI()
+    {
+        healthbar.value -= 0.005f;
+    }
     void GetInput()
     {
         hAxis = Input.GetAxisRaw("Horizontal");
