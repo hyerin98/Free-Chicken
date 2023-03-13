@@ -6,7 +6,7 @@ public class MoveObstacle : MonoBehaviour
 {
     public enum MoveObstacleType { A, B, C, D, E, F };
     public MoveObstacleType Type;
-    public PlayerController player;
+    PlayerController player;
 
     //UD_Floor
     float initPositionY;
@@ -30,10 +30,12 @@ public class MoveObstacle : MonoBehaviour
     public float dropSpeed;
     public bool isDropObj;
     //Swing
-   
     public float angle = 0;
     private float lerpTime = 0;
     private float speed = 2f;
+
+    //Attack
+    public bool isPlayerAttack;
 
     void Start()
     {
@@ -95,6 +97,11 @@ public class MoveObstacle : MonoBehaviour
     void rotate()
     {
         transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
+        if (isPlayerFollow)
+        {
+            player.gameObject.transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
+        }
+        
     }
     void leftRight()
     {
@@ -139,7 +146,7 @@ public class MoveObstacle : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Player" && isMove)
+        if (collision.gameObject.tag == "Player" && isPlayerAttack)
         {
             player.healthbar.value -= 10f;
         }
@@ -152,7 +159,7 @@ public class MoveObstacle : MonoBehaviour
            
             isBigJump = false;
         }
-        else if (collision.gameObject.tag == "Player" && isMove) 
+        else if (collision.gameObject.tag == "Player" && isMove && !isPlayerFollow) 
         {
             isPlayerFollow = true;
 
@@ -160,6 +167,7 @@ public class MoveObstacle : MonoBehaviour
     }
     void Swing()
     {
+        isPlayerAttack = true;
         lerpTime += Time.deltaTime * speed;
         transform.rotation = CalculateMovementOfPendulum();
 
@@ -181,16 +189,21 @@ public class MoveObstacle : MonoBehaviour
         switch (Type)
         {
             case MoveObstacleType.A:
+                isMove = true;
+                //isPlayerAttack = true;
                 upDown();
-                isMove = true;
+             
                 break;
-            case MoveObstacleType.B:      
-                leftRight();
+            case MoveObstacleType.B:
                 isMove = true;
-
+                isPlayerAttack = true;
+                leftRight();
+               
                 break;
             case MoveObstacleType.C:
+                isMove = true;
                 rotate();
+                isPlayerFollow = false;
                 break;
             case MoveObstacleType.D:
                 isBigJump = true;
@@ -199,6 +212,7 @@ public class MoveObstacle : MonoBehaviour
                 isDropObj = true;
                 break;
             case MoveObstacleType.F:
+                isPlayerAttack = true;
                 Swing();
                 break;
         }
