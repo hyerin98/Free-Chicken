@@ -26,6 +26,7 @@ public class MoveObstacle : MonoBehaviour
 
     //Big Jump
     public bool isBigJump;
+    public float BigJumpPower;
     //Drop
     public float dropSpeed;
     public bool isDropObj;
@@ -150,16 +151,20 @@ public class MoveObstacle : MonoBehaviour
         {
             player.healthbar.value -= 10f;
         }
+        if (collision.gameObject.tag == "Player")
+        {
+            isPlayerFollow = true;
+        }
     }
     void OnCollisionStay(Collision collision) 
     {
         if(collision.gameObject.tag == "Player" && isBigJump)
         {
-            collision.rigidbody.AddForce(Vector3.up * 30, ForceMode.Impulse);
+            collision.rigidbody.AddForce(Vector3.up * BigJumpPower, ForceMode.Impulse);
            
             isBigJump = false;
         }
-        else if (collision.gameObject.tag == "Player" && isMove && !isPlayerFollow) 
+        if (collision.gameObject.tag == "Player" && isMove) 
         {
             isPlayerFollow = true;
 
@@ -212,7 +217,7 @@ public class MoveObstacle : MonoBehaviour
             case MoveObstacleType.C:
                 isMove = true;
                 rotate();
-                isPlayerFollow = false;
+                
                 break;
             case MoveObstacleType.D:
                 isBigJump = true;
