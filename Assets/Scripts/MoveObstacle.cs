@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MoveObstacle : MonoBehaviour
 {
-    public enum MoveObstacleType { A, B, C, D, E, F };
+    public enum MoveObstacleType { A, B, C, D, E, F ,G};
     public MoveObstacleType Type;
     PlayerController player;
 
@@ -165,6 +165,14 @@ public class MoveObstacle : MonoBehaviour
 
         }
     }
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            isPlayerFollow = false;
+        }
+    }
+
     void Swing()
     {
         isPlayerAttack = true;
@@ -183,6 +191,7 @@ public class MoveObstacle : MonoBehaviour
     {
         return (Mathf.Sin(lerpTime) + 1) * .5f;
     }
+
     void Update()
     {
        

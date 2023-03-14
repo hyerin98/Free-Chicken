@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     bool run;
     bool isJump;
     public float jumpPower = 5f;
+    public int jumpCount = 2;   // 점프횟수, 2를 3으로 바꾸면 3단 점프
 
     Vector3 moveDir;
 
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
         anim = characterBody.GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
         isJump = false;
+        jumpCount = 0;
     }
 
     void Start()
@@ -61,7 +63,6 @@ public class PlayerController : MonoBehaviour
     {
         hAxis = Input.GetAxisRaw("Horizontal");
         vAxis = Input.GetAxisRaw("Vertical");
-       
     }
 
     void Move()
@@ -80,7 +81,6 @@ public class PlayerController : MonoBehaviour
 
             characterBody.forward = moveDir;
             transform.position += moveDir * finalSpeed * Time.deltaTime;
-           
         }
         
         if (Input.GetKey(KeyCode.LeftShift))
@@ -100,10 +100,14 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (Input.GetButtonDown("Jump") && !isJump)
+        if(jumpCount >0)
         {
-            isJump = true;
-            rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+            if (Input.GetButtonDown("Jump")) // && !isJump)
+            {
+                isJump = true;
+                rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+                --jumpCount;
+            }
         }
     }
 
@@ -111,9 +115,9 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Floor" || collision.gameObject.tag == "Obstacle")
         {
+            jumpCount = 2;
             isJump = false;
         }
-       
     }
 
     private void LookAround() // 카메라
