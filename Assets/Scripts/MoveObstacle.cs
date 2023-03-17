@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class MoveObstacle : MonoBehaviour
 {
     public enum MoveObstacleType { A, B, C, D, E, F ,G};
     public MoveObstacleType Type;
     PlayerController player;
+
+    //MeshRenderer mesh;
 
     //UD_Floor
     float initPositionY;
@@ -150,12 +153,14 @@ public class MoveObstacle : MonoBehaviour
         if (collision.gameObject.tag == "Player" && isPlayerAttack)
         {
             player.healthbar.value -= 10f;
+            
         }
         if (collision.gameObject.tag == "Player")
         {
             isPlayerFollow = true;
         }
     }
+
     void OnCollisionStay(Collision collision) 
     {
         if(collision.gameObject.tag == "Player" && isBigJump)

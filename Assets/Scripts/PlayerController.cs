@@ -10,7 +10,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform characterBody;
     [SerializeField] private Transform cameraArm;
 
+    public GameObject player;
+
     Rigidbody rigid;
+
+    Renderer render;
+    SkinnedMeshRenderer skinrender;
+
+
+    public ParticleSystem damagePs;
+    public bool playDamagePs;
+
 
     public float speed = 5f;
     public float runSpeed = 8f;
@@ -45,6 +55,9 @@ public class PlayerController : MonoBehaviour
     {
         obstacle = GameObject.FindGameObjectWithTag("Obstacle").GetComponent<MoveObstacle>();
         playerHealth = 100f;
+
+        playDamagePs = true;
+        //damagePs.Play();
     }
 
     void Update()
@@ -58,6 +71,12 @@ public class PlayerController : MonoBehaviour
     void UI()
     {
         healthbar.value -= 0.005f;
+
+        if(healthbar.value == 0 )
+        {
+            player.transform.position = new Vector3(0, 0, 0);
+            healthbar.value = 100f;
+        }
     }
     void GetInput()
     {
@@ -102,9 +121,9 @@ public class PlayerController : MonoBehaviour
     {
         if(jumpCount >0)
         {
-            if (Input.GetButtonDown("Jump")) // && !isJump)
+            if (Input.GetButtonDown("Jump") && !isJump)
             {
-                isJump = true;
+                //isJump = true;
                 rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
                 --jumpCount;
             }
@@ -117,6 +136,19 @@ public class PlayerController : MonoBehaviour
         {
             jumpCount = 2;
             isJump = false;
+        }
+
+        if (collision.gameObject.tag == "Obstacle")
+        {
+            // 장애물 충돌 시 튕겨져나가는? 효과주기
+            //ContactPoint cp = collision.GetContact(0);
+            //moveDir = player.transform.position - cp.point;
+            //rigid.AddForce((moveDir).normalized * 20f, ForceMode.Impulse);
+
+            playerHealth -= 10f;
+            healthbar.value -= 10f;
+
+            damagePs.Play();
         }
     }
 
