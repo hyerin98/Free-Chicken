@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,11 +6,12 @@ using UnityEngine.Rendering;
 
 public class MoveObstacle : MonoBehaviour
 {
+    public float delayTime = 1f;
+    public float repeatTime = 5f;
+
     public enum MoveObstacleType { A, B, C, D, E, F ,G};
     public MoveObstacleType Type;
     PlayerController player;
-
-    //MeshRenderer mesh;
 
     //UD_Floor
     float initPositionY;
@@ -37,6 +39,10 @@ public class MoveObstacle : MonoBehaviour
     public float angle = 0;
     private float lerpTime = 0;
     private float speed = 2f;
+
+    //Fire
+    public ParticleSystem firePs;
+    public bool playerFirePs;
 
     //Attack
     public bool isPlayerAttack;
@@ -150,7 +156,11 @@ public class MoveObstacle : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-    
+        if (collision.gameObject.tag == "Player" && isPlayerAttack)
+        {
+            player.healthbar.value -= 10f;
+            
+        }
         if (collision.gameObject.tag == "Player")
         {
             isPlayerFollow = true;
@@ -187,6 +197,18 @@ public class MoveObstacle : MonoBehaviour
 
 
     }
+
+    //void Fire()
+    //{
+    //    isPlayerAttack = true;
+    //    InvokeRepeating("RepeatFire", delayTime, repeatTime);
+    //}
+
+    //void RepeatFire()
+    //{
+    //    firePs.Play();
+    //}
+
     Quaternion CalculateMovementOfPendulum()
     {
         return Quaternion.Lerp(Quaternion.Euler(Vector3.forward * angle),
@@ -211,7 +233,7 @@ public class MoveObstacle : MonoBehaviour
                 break;
             case MoveObstacleType.B:
                 isMove = true;
-                //isPlayerAttack = true;
+                isPlayerAttack = true;
                 leftRight();
                
                 break;
@@ -229,6 +251,10 @@ public class MoveObstacle : MonoBehaviour
             case MoveObstacleType.F:
                 isPlayerAttack = true;
                 Swing();
+                break;
+            case MoveObstacleType.G:
+                isPlayerAttack = true;
+                //Fire();
                 break;
         }
        

@@ -19,7 +19,9 @@ public class PlayerController : MonoBehaviour
 
 
     public ParticleSystem damagePs;
+    public ParticleSystem jumpPs;
     public bool playDamagePs;
+    public bool playJumpPs;
 
 
     public float speed = 5f;
@@ -57,6 +59,7 @@ public class PlayerController : MonoBehaviour
         playerHealth = 100f;
 
         playDamagePs = true;
+        playJumpPs = true;
         //damagePs.Play();
     }
 
@@ -126,6 +129,8 @@ public class PlayerController : MonoBehaviour
                 //isJump = true;
                 rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
                 --jumpCount;
+
+                jumpPs.Play();
             }
         }
     }
@@ -138,11 +143,7 @@ public class PlayerController : MonoBehaviour
             isJump = false;
         }
 
-      
-    }
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "Fire" /*&& obstacle.isPlayerAttack == true*/)
+        if (collision.gameObject.tag == "Obstacle")
         {
             // 장애물 충돌 시 튕겨져나가는? 효과주기
             //ContactPoint cp = collision.GetContact(0);
@@ -155,6 +156,7 @@ public class PlayerController : MonoBehaviour
             damagePs.Play();
         }
     }
+
     private void LookAround() // 카메라
     {
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
