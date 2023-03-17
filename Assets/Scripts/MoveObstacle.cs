@@ -150,11 +150,7 @@ public class MoveObstacle : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Player" && isPlayerAttack)
-        {
-            player.healthbar.value -= 10f;
-            
-        }
+    
         if (collision.gameObject.tag == "Player")
         {
             isPlayerFollow = true;
@@ -215,7 +211,7 @@ public class MoveObstacle : MonoBehaviour
                 break;
             case MoveObstacleType.B:
                 isMove = true;
-                isPlayerAttack = true;
+                //isPlayerAttack = true;
                 leftRight();
                
                 break;

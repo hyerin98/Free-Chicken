@@ -138,7 +138,11 @@ public class PlayerController : MonoBehaviour
             isJump = false;
         }
 
-        if (collision.gameObject.tag == "Obstacle")
+      
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Fire" /*&& obstacle.isPlayerAttack == true*/)
         {
             // 장애물 충돌 시 튕겨져나가는? 효과주기
             //ContactPoint cp = collision.GetContact(0);
@@ -151,7 +155,6 @@ public class PlayerController : MonoBehaviour
             damagePs.Play();
         }
     }
-
     private void LookAround() // 카메라
     {
         Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));

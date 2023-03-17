@@ -20,6 +20,7 @@ Material:
     RenderType: Transparent
   disabledShaderPasses:
   - GRABPASS
+  - ALWAYS
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -44,7 +45,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 3b1442935dca18d42a712f51603a6755, type: 3}
+        m_Texture: {fileID: 2800000, guid: a807a0c8faccde84a9f0aef4f0fb75fc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
