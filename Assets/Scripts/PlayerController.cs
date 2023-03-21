@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Floor" || collision.gameObject.tag == "Obstacle")
+        if (collision.gameObject.tag == "Floor" /*|| collision.gameObject.tag == "Obstacle"*/)
         {
             jumpCount = 2;
             isJump = false;
@@ -150,10 +150,11 @@ public class PlayerController : MonoBehaviour
             //moveDir = player.transform.position - cp.point;
             //rigid.AddForce((moveDir).normalized * 20f, ForceMode.Impulse);
 
-            playerHealth -= 10f;
-            healthbar.value -= 10f;
-
-            damagePs.Play();
+            /* playerHealth -= 10f;
+             healthbar.value -= 10f;*/
+            jumpCount = 1;
+            isJump = false;
+            //damagePs.Play();
         }
     }
 

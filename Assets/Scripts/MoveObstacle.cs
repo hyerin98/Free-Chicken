@@ -149,7 +149,7 @@ public class MoveObstacle : MonoBehaviour
     {
         if(other.gameObject.tag == "Player" && isDropObj)
         {
-            
+           
             transform.position = Vector3.Lerp(transform.position, other.transform.position, dropSpeed);
         }
      
@@ -171,7 +171,7 @@ public class MoveObstacle : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player" && isBigJump)
         {
-            collision.rigidbody.AddForce(Vector3.up * BigJumpPower, ForceMode.Impulse);
+            collision.rigidbody.AddForce(Vector3.forward * BigJumpPower, ForceMode.Impulse);
            
             isBigJump = false;
         }
@@ -240,7 +240,6 @@ public class MoveObstacle : MonoBehaviour
             case MoveObstacleType.C:
                 isMove = true;
                 rotate();
-                
                 break;
             case MoveObstacleType.D:
                 isBigJump = true;
