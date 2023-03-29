@@ -39,8 +39,11 @@ public class PlayerController : MonoBehaviour
     Vector3 moveDir;
 
     Animator anim;
-  
+
     MoveObstacle obstacle;
+
+    public GameObject EggPrefab;
+    int eggCnt;
 
     public float playerHealth;
     public Slider healthbar;
@@ -60,6 +63,8 @@ public class PlayerController : MonoBehaviour
 
         playDamagePs = true;
         playJumpPs = true;
+
+        eggCnt = 10;
         //damagePs.Play();
     }
 
@@ -70,12 +75,13 @@ public class PlayerController : MonoBehaviour
         GetInput();
         Jump();
         UI();
+        StartCoroutine(Fire());
     }
     void UI()
     {
         healthbar.value -= 0.005f;
 
-        if(healthbar.value == 0 )
+        if (healthbar.value == 0)
         {
             player.transform.position = new Vector3(0, 0, 0);
             healthbar.value = 100f;
@@ -89,7 +95,7 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        finalSpeed = (run) ? runSpeed : speed; 
+        finalSpeed = (run) ? runSpeed : speed;
 
         Vector2 moveInput = new Vector2(hAxis, vAxis);
         bool isMove = moveInput.magnitude != 0;
@@ -104,7 +110,7 @@ public class PlayerController : MonoBehaviour
             characterBody.forward = moveDir;
             transform.position += moveDir * finalSpeed * Time.deltaTime;
         }
-        
+
         if (Input.GetKey(KeyCode.LeftShift))
         {
             run = true;
@@ -116,13 +122,13 @@ public class PlayerController : MonoBehaviour
 
         float percent = ((run) ? 1 : 0.5f) * moveInput.magnitude;
         anim.SetFloat("Blend", percent, 0.1f, Time.deltaTime);
-        
+
         //Debug.DrawRay(cameraArm.position,new Vector3(cameraArm.forward.x,0f,cameraArm.forward.z).normalized,Color.red);
     }
 
     void Jump()
     {
-        if(jumpCount >0)
+        if (jumpCount > 0)
         {
             if (Input.GetButtonDown("Jump") && !isJump)
             {
@@ -135,6 +141,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    IEnumerator Fire()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (eggCnt > 0)
+            {
+                Vector3 firePos = transform.position + anim.transform.forward + new Vector3(0f, 0.8f, 0f);
+                var Egg = Instantiate(EggPrefab, firePos, Quaternion.identity).GetComponent<PlayerEgg>();
+                Egg.Fire(anim.transform.forward);
+                --eggCnt;
+
+                if (eggCnt <= 0)
+                {
+                    yield return new WaitForSeconds(5f);
+                    eggCnt = 10;
+                }
+            }
+
+        }
+    }
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Floor" /*|| collision.gameObject.tag == "Obstacle"*/)
@@ -164,7 +190,7 @@ public class PlayerController : MonoBehaviour
         Vector3 camAngle = cameraArm.rotation.eulerAngles;
         float x = camAngle.x - mouseDelta.y;
 
-        if(x<100f)
+        if (x < 100f)
         {
             x = Mathf.Clamp(x, -1f, 70f);
         }
