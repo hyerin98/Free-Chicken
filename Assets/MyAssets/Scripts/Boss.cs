@@ -18,8 +18,7 @@ public class Boss : MonoBehaviour
     public bool isAttack;
     public GameObject fireAttack;
     public bool isRockFalling;
-    //public bool isFireFalling;
-
+    
     public bool isRandomSpace;
     public Slider bossHealthbar;
 
@@ -44,7 +43,7 @@ public class Boss : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (nav.enabled)
+        if (nav.enabled && !isDie)
         {
            
             nav.isStopped = !isChase;
@@ -63,21 +62,19 @@ public class Boss : MonoBehaviour
         switch (randomRange)
         {
             case 0:
-               
                 bossAnim.SetTrigger("doAttack1");
                 Debug.Log("플레이어 공격! 주먹발사 모션 발싸");
                 isRandomSpace = true;
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(3f);
                 break;
+            
             case 1:
-               
                 bossAnim.SetTrigger("doFireAttack");
                 Debug.Log("플레이어 공격! doFireAttack 발싸");
-                // 불 발싸
-                fireAttack.SetActive(true);
-                  
-                yield return new WaitForSeconds(2f);
+                fireAttack.SetActive(true); 
+                yield return new WaitForSeconds(3f);
                 break;
+            
             case 2:
                 bossAnim.SetTrigger("doJump");
                 // 돌떨어지게 하기
@@ -85,22 +82,24 @@ public class Boss : MonoBehaviour
                 cameraShake.StartCoroutine(cameraShake.Shake(.5f, .3f));
                 yield return new WaitForSeconds(3f);
                 break;
+            
             case 3:
                 bossAnim.SetTrigger("doFireShoot");
                 Debug.Log("바닥 내려치기");
                 isRockFalling = true;
                 cameraShake.StartCoroutine(cameraShake.Shake(.5f, .3f));
-                Time.timeScale = 1.5F;
+                Time.timeScale = 1.5f;
                 yield return new WaitForSeconds(3f);
                 break;
 
-           // case 4:
+           
 
         }
         Time.timeScale = 1f;
-        isAttack = false;
+        
         fireAttack.SetActive(false);
         bossAnim.SetBool("isAttack", false);
+        isAttack = false;
         isChase = true;
         
     }
@@ -125,7 +124,7 @@ public class Boss : MonoBehaviour
     {
        
         float targetRadius = 1.5f;
-        float targetRange = 3.5f;
+        float targetRange = 3f;
         RaycastHit[] rayHits = Physics.SphereCastAll(transform.position, targetRadius, transform.forward, targetRange, LayerMask.GetMask("Player"));
         if (rayHits.Length > 0 && !isAttack && !isBuff &&!isDie)
         {
@@ -135,7 +134,7 @@ public class Boss : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "EggShoot" && !isBuff && !isAttack)
+        if (other.gameObject.tag == "EggShoot" && !isBuff)
         {
             bossHealthbar.value -= 5f;
             StartCoroutine(Buff());
@@ -157,7 +156,6 @@ public class Boss : MonoBehaviour
         yield return new WaitForSeconds(2f);
         isBuff = false;
         bossAnim.SetBool("isHit", false);
-        yield return new WaitForSeconds(.25f);
         Time.timeScale = 1f;
         isChase = true;
         
@@ -170,7 +168,7 @@ public class Boss : MonoBehaviour
         isDie = true;
         bossAnim.SetTrigger("doDie");
         Time.timeScale = 0.5f;
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(3f);
         this.gameObject.SetActive(false);
         Time.timeScale = 1f;
     }
