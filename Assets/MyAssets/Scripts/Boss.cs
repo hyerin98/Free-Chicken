@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 public class Boss : MonoBehaviour
 {
     Rigidbody rb;
@@ -12,12 +13,16 @@ public class Boss : MonoBehaviour
     public float moveSpeed;
     public NavMeshAgent nav;
     public bool isChase;
-
+    public bool isDie;
+    public bool isBuff;
     public bool isAttack;
     public GameObject fireAttack;
     public bool isRockFalling;
+    //public bool isFireFalling;
 
     public bool isRandomSpace;
+    public Slider bossHealthbar;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -52,6 +57,7 @@ public class Boss : MonoBehaviour
     {
         isChase = false;
         isAttack = true;
+        isBuff = false;
         bossAnim.SetBool("isAttack", true);
         int randomRange = Random.Range(0, 5);
         switch (randomRange)
@@ -84,12 +90,14 @@ public class Boss : MonoBehaviour
                 Debug.Log("바닥 내려치기");
                 isRockFalling = true;
                 cameraShake.StartCoroutine(cameraShake.Shake(.5f, .3f));
+                Time.timeScale = 1.5F;
                 yield return new WaitForSeconds(3f);
                 break;
 
            // case 4:
 
         }
+        Time.timeScale = 1f;
         isAttack = false;
         fireAttack.SetActive(false);
         bossAnim.SetBool("isAttack", false);
@@ -117,12 +125,54 @@ public class Boss : MonoBehaviour
     {
        
         float targetRadius = 1.5f;
-        float targetRange = 3f;
+        float targetRange = 3.5f;
         RaycastHit[] rayHits = Physics.SphereCastAll(transform.position, targetRadius, transform.forward, targetRange, LayerMask.GetMask("Player"));
-        if (rayHits.Length > 0 && !isAttack)
+        if (rayHits.Length > 0 && !isAttack && !isBuff &&!isDie)
         {
             StartCoroutine(Attack());
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "EggShoot" && !isBuff && !isAttack)
+        {
+            bossHealthbar.value -= 5f;
+            StartCoroutine(Buff());
+            if (bossHealthbar.value <= 0)
+            {
+                StartCoroutine(Die());
+            }
+            
+        }
+    }
+    IEnumerator Buff()
+    {
+        isChase = false;
+        isAttack = false;
+        isBuff = true;
+        bossAnim.SetBool("isHit", true);
+        bossAnim.SetTrigger("doBuff");
+        Time.timeScale = 0.75f;
+        yield return new WaitForSeconds(2f);
+        isBuff = false;
+        bossAnim.SetBool("isHit", false);
+        yield return new WaitForSeconds(.25f);
+        Time.timeScale = 1f;
+        isChase = true;
+        
+        
+    }
+    IEnumerator Die()
+    {
+        isChase = false;
+        isAttack = false;
+        isDie = true;
+        bossAnim.SetTrigger("doDie");
+        Time.timeScale = 0.5f;
+        yield return new WaitForSeconds(4f);
+        this.gameObject.SetActive(false);
+        Time.timeScale = 1f;
     }
 }                               
   

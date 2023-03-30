@@ -81,11 +81,12 @@ public class PlayerController : MonoBehaviour
     {
         
 
-        if (healthbar.value == 0)
+       /* if (healthbar.value == 0)
         {
+            // 게임 오버 창 띄우기
             player.transform.position = new Vector3(0, 0, 0);
             healthbar.value = 100f;
-        }
+        }*/
     }
     void GetInput()
     {
@@ -143,7 +144,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator Fire()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Shoot"))
         {
             if (eggCnt > 0)
             {
@@ -155,7 +156,7 @@ public class PlayerController : MonoBehaviour
                 if (eggCnt <= 0)
                 {
                     yield return new WaitForSeconds(5f);
-                    eggCnt = 10;
+                    eggCnt = 5;
                 }
             }
 

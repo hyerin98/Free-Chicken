@@ -7,6 +7,7 @@ public class RandomAttackSpace : MonoBehaviour
     Boss boss;
     public GameObject prefab;
     public GameObject dropRock;
+    public GameObject dropFire;
     BoxCollider area;
     public int cnt = 3;
     GameObject go;
@@ -33,33 +34,34 @@ public class RandomAttackSpace : MonoBehaviour
         }
         boss.isRandomSpace = false;
     }
-    
+
 
     void Spawn()
     {
         pos = GetRandomPos();
-        
+
         GameObject go = prefab;
         GameObject instance = Instantiate(go, pos, Quaternion.identity);
 
         StartCoroutine(SpawnRock(pos));
         Destroy(instance, 3f);
-        
+
     }
     IEnumerator SpawnRock(Vector3 pos)
     {
-        yield return new WaitForSeconds(3f);
-        Vector3 newPos = pos + new Vector3(0f,10f,0f);
-        for (int i = 0; i < cnt; i++)
-        {
-            GameObject rock = dropRock;
-            GameObject ins = Instantiate(rock, newPos, Quaternion.identity);
-            Destroy(ins, 3f);
-           
-        }
-       
+        
+        yield return new WaitForSeconds(1f);
+        Vector3 newPos = pos + new Vector3(0f, 5f, 0f);
 
+        GameObject fire = dropFire;
+        GameObject ins = Instantiate(fire, newPos, Quaternion.identity);
+        Destroy(ins, 3f);
+
+
+        //break;
     }
+
+
     Vector3 GetRandomPos()
     {
         Vector3 basePos = transform.position;
