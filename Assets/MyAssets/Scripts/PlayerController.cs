@@ -23,7 +23,6 @@ public class PlayerController : MonoBehaviour
     public bool playDamagePs;
     public bool playJumpPs;
 
-
     public float speed = 5f;
     public float runSpeed = 8f;
     public float finalSpeed;
@@ -41,12 +40,16 @@ public class PlayerController : MonoBehaviour
     Animator anim;
 
     MoveObstacle obstacle;
+    Boss boss;
 
     public GameObject EggPrefab;
     int eggCnt;
 
     public float playerHealth;
     public Slider healthbar;
+
+    public GameObject playerShield;
+    bool isPlayerShield;
 
     void Awake()
     {
@@ -59,12 +62,13 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         obstacle = GameObject.FindGameObjectWithTag("Obstacle").GetComponent<MoveObstacle>();
+        boss = GameObject.Find("Boss").GetComponent<Boss>();
         playerHealth = 100f;
 
         playDamagePs = true;
         playJumpPs = true;
 
-        eggCnt = 10;
+        eggCnt = 1;
         //damagePs.Play();
     }
 
@@ -75,7 +79,9 @@ public class PlayerController : MonoBehaviour
         GetInput();
         Jump();
         UI();
-        StartCoroutine(Fire());
+        StartCoroutine(Fire1());
+        StartCoroutine(Fire2());
+        StartCoroutine(Shield());
     }
     void UI()
     {
@@ -142,9 +148,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator Fire()
+    IEnumerator Shield()
     {
-        if (Input.GetButtonDown("Shoot"))
+        // yield return new WaitForSeconds(2f);
+
+        if (Input.GetButtonDown("Shield") && !isPlayerShield) //f키
+        {
+            isPlayerShield= true;
+            playerShield.SetActive(true);
+            yield return new WaitForSeconds(2f);
+            playerShield.SetActive(false);
+            isPlayerShield = false;
+        }
+       
+    }
+
+    IEnumerator Fire1()
+    {
+        if (Input.GetButtonDown("Shoot1"))
         {
             if (eggCnt > 0)
             {
@@ -155,13 +176,32 @@ public class PlayerController : MonoBehaviour
 
                 if (eggCnt <= 0)
                 {
-                    yield return new WaitForSeconds(5f);
-                    eggCnt = 5;
+                    yield return new WaitForSeconds(2f);
+                    eggCnt = 1;
                 }
             }
-
         }
     }
+
+    IEnumerator Fire2()
+    {
+        if(Input.GetButtonDown("Shoot2"))
+        {
+
+            Vector3 firePos = transform.position + anim.transform.forward + new Vector3(0f, 0.8f, 0f);
+            Vector3 firePos1 = transform.position + anim.transform.forward + new Vector3(1f, 0.8f, -1f);
+            Vector3 firePos2 = transform.position + anim.transform.forward + new Vector3(-1f, 0.8f, 1f);
+            var Egg = Instantiate(EggPrefab, firePos, Quaternion.identity).GetComponent<PlayerEgg>();
+            var Egg1 = Instantiate(EggPrefab, firePos1, Quaternion.identity).GetComponent<PlayerEgg>();
+            var Egg2 = Instantiate(EggPrefab, firePos2, Quaternion.identity).GetComponent<PlayerEgg>();
+            Egg.Fire(anim.transform.forward);
+            Egg1.Fire(anim.transform.forward);
+            Egg2.Fire(anim.transform.forward);
+
+            yield return new WaitForSeconds(2f);
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Floor" /*|| collision.gameObject.tag == "Obstacle"*/)
@@ -187,10 +227,14 @@ public class PlayerController : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Fire" || other.gameObject.tag == "Rock")
+        if ((other.gameObject.tag == "Fire" || other.gameObject.tag == "Rock") && !isPlayerShield)
         {
+            
             healthbar.value -= 5f;
+            damagePs.Play();
         }
+        
+       
     }
     private void LookAround() // 카메라
     {
