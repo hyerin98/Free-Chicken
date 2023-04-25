@@ -5,13 +5,14 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using static UnityEditor.PlayerSettings;
 
-public class MoveObstacle : MonoBehaviour
+public class Obstacle_Cave : MonoBehaviour
 {
     public float delayTime = 1f;
     public float repeatTime = 5f;
 
     public enum MoveObstacleType { A, B, C, D, E, F ,G,H,I,J,K,L,M};
     public MoveObstacleType Type;
+
     //PlayerController player;
     CaveScenePlayer player;
 
@@ -42,7 +43,7 @@ public class MoveObstacle : MonoBehaviour
     //Swing
     public float angle = 0;
     private float lerpTime = 0;
-    private float speed = 2f;
+    public float swingSpeed;
 
     //Fire
     public ParticleSystem firePs;
@@ -241,7 +242,7 @@ public class MoveObstacle : MonoBehaviour
     void Swing()
     {
         isPlayerAttack = true;
-        lerpTime += Time.deltaTime * speed;
+        lerpTime += Time.deltaTime * swingSpeed;
         transform.rotation = CalculateMovementOfPendulum();
 
 
