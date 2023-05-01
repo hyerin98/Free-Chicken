@@ -8,19 +8,24 @@ public class CityScenePlayer : MonoBehaviour
     Rigidbody rigid;
     Animator anim;
     //MoveObstacle obstacle;
+    
     public ParticleSystem jumpPs;
+    public ParticleSystem DiePs;
     public float jumpPower;
     bool isJump;
     public float hAxis;
     public float Speed;
     public bool isfallingFruits;
-    
+    public bool ishurdleUp;
+
+    bool isDie;
     // Start is called before the first frame update
     void Start()
     {
         anim = characterBody.GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        
+        DiePs.gameObject.SetActive(false);
+       
     }
 
     void Update()
@@ -31,8 +36,11 @@ public class CityScenePlayer : MonoBehaviour
     }
     void FixedUpdate()
     {
-        GetInput();
-        Move();
+        if (!isDie)
+        {
+            GetInput();
+            Move();
+        }
         
     }
     void GetInput()
@@ -77,9 +85,16 @@ public class CityScenePlayer : MonoBehaviour
         }
         if (collision.gameObject.tag == "Obstacle")
         {
-            SceneManager.LoadScene("CityScene");
+            TagisObj();
         }
 
+    }
+    void OnParticleCollision(GameObject other)
+    {
+        if(other.tag == "Obstacle")
+        {
+            TagisObj();
+        }    
     }
     void OnTriggerEnter(Collider other)
     {
@@ -90,7 +105,29 @@ public class CityScenePlayer : MonoBehaviour
         }
         if (other.tag == "Obstacle")
         {
-            SceneManager.LoadScene("CityScene");
+            TagisObj();
         }
+        if(other.tag == "Hurdle")
+        {
+            ishurdleUp = true;
+            Invoke("hurdleDownSet", 2.5f);
+        }
+    }
+    void hurdleDownSet()
+    {
+        ishurdleUp = false;
+    }
+    void TagisObj()
+    {
+        isDie = true;
+        DiePs.gameObject.SetActive(true);
+        anim.SetTrigger("doDie");
+        anim.SetBool("isRun", false);
+
+        Invoke("ReLoadScene", 1.5f);
+    }
+    void ReLoadScene()
+    {
+        SceneManager.LoadScene("CityScene");
     }
 }
