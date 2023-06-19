@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class PlayerEgg : MonoBehaviour
 {
-    bool isFire;
+    public bool isFire;
     Vector3 direction;
     [SerializeField] float speed = 1f;
 
@@ -36,4 +36,13 @@ public class PlayerEgg : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    //void OnCollisionEnter(Collision collision)
+    //{
+    //    if(collision.gameObject.tag == "Note")
+    //    {
+    //        Debug.Log("´ê¾ÒÀ½");
+    //    }
+    //}
+
 }
