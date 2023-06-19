@@ -14,29 +14,41 @@ public class CityScenePlayer : MonoBehaviour
     public float jumpPower;
     bool isJump;
     public float hAxis;
+    public float vAxis;
     public float Speed;
     public bool isfallingFruits;
     public bool ishurdleUp;
 
     bool isDie;
+    bool particleAttack;
+
+    public bool isLast;
+    public bool isAllStop;
+    public GameObject TalkUI;
     // Start is called before the first frame update
     void Start()
     {
         anim = characterBody.GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
         DiePs.gameObject.SetActive(false);
-       
+        particleAttack = false;
     }
 
     void Update()
     {
+        if (!isDie && !isAllStop)
+        {
 
-        Jump();
-
+            Jump();
+        }
+        if (isAllStop)
+        {
+            anim.SetBool("isRun", false);
+        }
     }
     void FixedUpdate()
     {
-        if (!isDie)
+        if (!isDie && !isAllStop)
         {
             GetInput();
             Move();
@@ -46,14 +58,21 @@ public class CityScenePlayer : MonoBehaviour
     void GetInput()
     {
         hAxis = Input.GetAxisRaw("Horizontal");
-       
+        vAxis = Input.GetAxisRaw("Vertical");
     }
     void Move()
     {
         
         Vector3 position = transform.position;
         position.x += hAxis * Time.smoothDeltaTime * Speed;
-        position.z += Time.smoothDeltaTime * Speed;
+        if (!isLast)
+        {
+            position.z += Time.smoothDeltaTime * Speed;
+        }
+        else if (isLast)
+        {
+            position.z += vAxis *Time.smoothDeltaTime * Speed;
+        }
         transform.position = position;
         anim.SetTrigger("doRun");
         anim.SetBool("isRun", true);
@@ -83,7 +102,7 @@ public class CityScenePlayer : MonoBehaviour
             
             isJump = false;
         }
-        if (collision.gameObject.tag == "Obstacle")
+        if (collision.gameObject.tag == "Obstacle" && !isDie)
         {
             TagisObj();
         }
@@ -91,8 +110,10 @@ public class CityScenePlayer : MonoBehaviour
     }
     void OnParticleCollision(GameObject other)
     {
-        if(other.tag == "Obstacle")
+        if(other.tag == "Obstacle" && !particleAttack )
         {
+            particleAttack = true;
+            Destroy(other.gameObject);
             TagisObj();
         }    
     }
@@ -103,7 +124,7 @@ public class CityScenePlayer : MonoBehaviour
             isfallingFruits = true;
 
         }
-        if (other.tag == "Obstacle")
+        if (other.tag == "Obstacle" &&!isDie)
         {
             TagisObj();
         }
@@ -111,6 +132,45 @@ public class CityScenePlayer : MonoBehaviour
         {
             ishurdleUp = true;
             Invoke("hurdleDownSet", 2.5f);
+        }
+        if(other.tag == "Rain")
+        {
+            isJump = true;
+            Speed = 3.5f;
+        }
+        if(other.tag == "Ice")
+        {
+            isJump = true;
+            Speed = 20f;
+        }
+        if(other.tag == "LastZone")
+        {
+            isAllStop = true;
+            TalkUI.gameObject.SetActive(true);
+            Invoke("Exit", 2f);
+        }
+      
+    }
+    void Exit()
+    {
+        TalkUI.gameObject.SetActive(false);
+        isAllStop = false;
+        isLast = true;
+        jumpPower = 15f;
+        Debug.Log(jumpPower);
+
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Rain")
+        {
+            isJump = false;
+            Speed = 6f;
+        }
+        if (other.tag == "Ice")
+        {
+            isJump = false;
+            Speed = 6f;
         }
     }
     void hurdleDownSet()
@@ -120,9 +180,12 @@ public class CityScenePlayer : MonoBehaviour
     void TagisObj()
     {
         isDie = true;
+        //this.transform.position = new Vector3(this.transform.position.x, 0f, this.transform.position.z);
         DiePs.gameObject.SetActive(true);
-        anim.SetTrigger("doDie");
         anim.SetBool("isRun", false);
+        
+        anim.SetTrigger("doDie");
+        
 
         Invoke("ReLoadScene", 1.5f);
     }

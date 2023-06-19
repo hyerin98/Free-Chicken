@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CityMoveObj : MonoBehaviour
 {
-    public enum MoveObstacleType { A, B};
+    public enum MoveObstacleType { A, B,C};
     public MoveObstacleType Type;
     CityScenePlayer player;
     float initPositionY;
@@ -17,7 +17,7 @@ public class CityMoveObj : MonoBehaviour
 
     //MovePlatform
     public bool isMove;
-    public bool isPlayerFollow;
+   
 
     public float rotateSpeed;
 
@@ -25,7 +25,7 @@ public class CityMoveObj : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("CityCharacter").GetComponent<CityScenePlayer>();
-        isPlayerFollow = false;
+        
     }
     void Awake()
     {
@@ -36,13 +36,21 @@ public class CityMoveObj : MonoBehaviour
 
         }
     }
+    public void hurdleUp()
+    {
+        transform.position = new Vector3(this.transform.position.x, 2, this.transform.position.z);
+        
+    }
+    public void hurdleDown()
+    {
+        //layer.ishurdleUp = false;
+        transform.position = new Vector3(this.transform.position.x, 0.2f, this.transform.position.z);
+
+    }
     void rotate()
     {
         transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
-        if (isPlayerFollow)
-        {
-            player.gameObject.transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
-        }
+        
 
     }
     void leftRight()
@@ -62,46 +70,16 @@ public class CityMoveObj : MonoBehaviour
         if (turnSwitch)
         {
             transform.position = transform.position + new Vector3(1, 0, 0) * moveSpeed * Time.deltaTime;
-            if (isPlayerFollow)
-            {
-                player.gameObject.transform.position = player.gameObject.transform.position + new Vector3(1, 0, 0) * moveSpeed * Time.deltaTime;
-            }
+            
         }
         else
         {
             transform.position = transform.position + new Vector3(-1, 0, 0) * moveSpeed * Time.deltaTime;
-            if (isPlayerFollow)
-            {
-                player.gameObject.transform.position = player.gameObject.transform.position + new Vector3(-1, 0, 0) * moveSpeed * Time.deltaTime;
-            }
+            
         }
 
     }
    
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.tag == "Player")
-        {
-            isPlayerFollow = true;
-        }
-    }
-
-    void OnCollisionStay(Collision collision)
-    {
-      
-        if (collision.gameObject.tag == "Player" && isMove)
-        {
-            isPlayerFollow = true;
-
-        }
-    }
-    void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.tag == "Player")
-        {
-            isPlayerFollow = false;
-        }
-    }
     // Update is called once per frame
     void Update()
     {
@@ -119,6 +97,17 @@ public class CityMoveObj : MonoBehaviour
                 leftRight();
 
                 break;
+            case MoveObstacleType.C:
+                if (player.ishurdleUp == true )
+                {
+                    hurdleUp();
+                }
+                else if (player.ishurdleUp == false )
+                {
+                    hurdleDown();
+                }
+                break;
         }
+        
     }
 }
